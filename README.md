@@ -153,7 +153,7 @@ Configuración en Render (una sola vez):
    - Secrets: `RENDER_DEPLOY_HOOK_API` y `RENDER_DEPLOY_HOOK_APP`. Los hooks nunca van en el código.
    - Variable: `API_PUBLIC_URL` = URL pública de la API.
 
-URL pública: `https://warman-app.onrender.com` (completar tras el despliegue). El plan gratuito de Render "duerme" el servicio sin uso; la primera petición puede tardar ~1 minuto.
+URL pública: https://warman-app.onrender.com | API: https://warman-api.onrender.com/docs . El plan gratuito de Render "duerme" el servicio sin uso; la primera petición puede tardar ~1 minuto.
 
 ## 9. Limitaciones y mejoras
 

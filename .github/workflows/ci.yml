@@ -55,7 +55,13 @@ jobs:
             -d '{"vibracion_rms_mm_s":2.6,"temp_rodamiento_acople_c":52.3,"temp_rodamiento_libre_c":47.8,"caudal_agua_sello_m3h":3.0,"presion_agua_sello_kpa":550,"presion_descarga_kpa":470,"velocidad_rpm":398,"potencia_kw":649,"densidad_pulpa_tm3":1.65,"nivel_cajon_pct":58,"horas_desde_cambio_impulsor":1500}'
 
       - name: Prueba de humo de la interfaz
-        run: curl -fsS -o /dev/null http://localhost:7860
+        run: |
+          # Gradio tarda unos segundos en arrancar: se reintenta hasta 60 s.
+          for i in $(seq 1 20); do
+            if curl -fsS -o /dev/null http://localhost:7860; then echo "Interfaz en línea"; exit 0; fi
+            echo "Esperando la interfaz... ($i/20)"; sleep 3
+          done
+          docker compose logs app; exit 1
 
       - name: Apagar
         if: always()
