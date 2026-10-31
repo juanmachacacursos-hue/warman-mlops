@@ -1,0 +1,14 @@
+.venv/
+.git/
+.github/
+__pycache__/
+*.pyc
+.pytest_cache/
+data/
+models/*.joblib
+tests/
+notebooks/
+docs/
+*.md
+!README.md
+.env

@@ -1,0 +1,39 @@
+name: CD
+
+# Se ejecuta SOLO cuando el CI termina en verde en la rama main.
+on:
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  desplegar:
+    name: Desplegar en Render
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+    steps:
+      # Los deploy hooks son secretos: se guardan en
+      # GitHub > Settings > Secrets and variables > Actions, nunca en el código.
+      - name: Desplegar API
+        env:
+          HOOK: ${{ secrets.RENDER_DEPLOY_HOOK_API }}
+        run: curl -fsS -X POST "$HOOK"
+
+      - name: Desplegar interfaz
+        env:
+          HOOK: ${{ secrets.RENDER_DEPLOY_HOOK_APP }}
+        run: curl -fsS -X POST "$HOOK"
+
+      - name: Verificar la URL pública de la API
+        if: ${{ vars.API_PUBLIC_URL != '' }}
+        env:
+          URL: ${{ vars.API_PUBLIC_URL }}
+        run: |
+          # Render tarda unos minutos en construir; se reintenta hasta 15 minutos.
+          for i in $(seq 1 30); do
+            if curl -fsS "$URL/health"; then echo; echo "API en línea"; exit 0; fi
+            echo "Esperando el despliegue... ($i/30)"; sleep 30
+          done
+          echo "La API no respondió a tiempo"; exit 1

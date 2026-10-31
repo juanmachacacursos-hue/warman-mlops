@@ -1,0 +1,23 @@
+# Blueprint de Render: crea los dos servicios (API e interfaz) desde este repositorio.
+# El despliegue automático de Render se desactiva: despliega el CD de GitHub Actions
+# solo cuando el CI pasa.
+services:
+  - type: web
+    name: warman-api
+    runtime: docker
+    plan: free
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    healthCheckPath: /health
+    autoDeploy: false
+
+  - type: web
+    name: warman-app
+    runtime: docker
+    plan: free
+    dockerfilePath: ./app/Dockerfile
+    dockerContext: .
+    autoDeploy: false
+    envVars:
+      - key: API_URL
+        sync: false   # se llena en Render con la URL pública de warman-api

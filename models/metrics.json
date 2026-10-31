@@ -1,0 +1,184 @@
+{
+  "nombre": "warman-estado-bomba",
+  "version": "1.0.0",
+  "fecha_entrenamiento": "2026-10-31T02:21:12+00:00",
+  "problema": "Clasificar el estado de una bomba Warman de alimentación a ciclones a partir de una lectura de sus sensores.",
+  "usuario": "Planner / supervisor de mantenimiento de la planta concentradora",
+  "modelo": "random_forest",
+  "parametros": {
+    "n_estimators": 200,
+    "max_depth": 14,
+    "min_samples_leaf": 3,
+    "class_weight": "balanced_subsample",
+    "n_jobs": -1,
+    "random_state": 2026
+  },
+  "variables": [
+    "vibracion_rms_mm_s",
+    "temp_rodamiento_acople_c",
+    "temp_rodamiento_libre_c",
+    "caudal_agua_sello_m3h",
+    "presion_agua_sello_kpa",
+    "presion_descarga_kpa",
+    "velocidad_rpm",
+    "potencia_kw",
+    "densidad_pulpa_tm3",
+    "nivel_cajon_pct",
+    "horas_desde_cambio_impulsor"
+  ],
+  "rangos_validos": {
+    "vibracion_rms_mm_s": [
+      0.0,
+      50.0
+    ],
+    "temp_rodamiento_acople_c": [
+      -10.0,
+      150.0
+    ],
+    "temp_rodamiento_libre_c": [
+      -10.0,
+      150.0
+    ],
+    "caudal_agua_sello_m3h": [
+      0.0,
+      20.0
+    ],
+    "presion_agua_sello_kpa": [
+      0.0,
+      1500.0
+    ],
+    "presion_descarga_kpa": [
+      0.0,
+      1500.0
+    ],
+    "velocidad_rpm": [
+      0.0,
+      600.0
+    ],
+    "potencia_kw": [
+      0.0,
+      1500.0
+    ],
+    "densidad_pulpa_tm3": [
+      1.0,
+      2.5
+    ],
+    "nivel_cajon_pct": [
+      0.0,
+      100.0
+    ],
+    "horas_desde_cambio_impulsor": [
+      0.0,
+      10000.0
+    ]
+  },
+  "clases": [
+    "Normal",
+    "Cavitacion",
+    "Riesgo rodamiento",
+    "Riesgo sello",
+    "Desgaste impulsor"
+  ],
+  "division": {
+    "tipo": "temporal",
+    "train": "< 2025-04-01",
+    "validacion": "2025-04-01 a 2025-07-01",
+    "test": ">= 2025-07-01",
+    "filas": {
+      "train": 40505,
+      "validacion": 7995,
+      "test": 16325
+    }
+  },
+  "metrica_principal": "f1_macro",
+  "comparacion_validacion_f1_macro": {
+    "regresion_logistica": 0.8912,
+    "random_forest": 0.9221
+  },
+  "metricas_test": {
+    "f1_macro": 0.9023,
+    "accuracy": 0.949,
+    "por_clase": {
+      "Normal": {
+        "precision": 0.9825,
+        "recall": 0.9625,
+        "f1": 0.9724,
+        "soporte": 13686
+      },
+      "Cavitacion": {
+        "precision": 0.938,
+        "recall": 0.9956,
+        "f1": 0.966,
+        "soporte": 228
+      },
+      "Riesgo rodamiento": {
+        "precision": 0.9808,
+        "recall": 0.8295,
+        "f1": 0.8988,
+        "soporte": 862
+      },
+      "Riesgo sello": {
+        "precision": 0.9709,
+        "recall": 0.9691,
+        "f1": 0.97,
+        "soporte": 550
+      },
+      "Desgaste impulsor": {
+        "precision": 0.6042,
+        "recall": 0.8448,
+        "f1": 0.7045,
+        "soporte": 999
+      }
+    },
+    "matriz_confusion": {
+      "etiquetas": [
+        "Normal",
+        "Cavitacion",
+        "Riesgo rodamiento",
+        "Riesgo sello",
+        "Desgaste impulsor"
+      ],
+      "valores": [
+        [
+          13173,
+          0,
+          14,
+          16,
+          483
+        ],
+        [
+          0,
+          227,
+          0,
+          0,
+          1
+        ],
+        [
+          70,
+          8,
+          715,
+          0,
+          69
+        ],
+        [
+          17,
+          0,
+          0,
+          533,
+          0
+        ],
+        [
+          148,
+          7,
+          0,
+          0,
+          844
+        ]
+      ]
+    }
+  },
+  "puerta_calidad": {
+    "f1_macro_minimo": 0.8,
+    "aprobado": true
+  }
+}

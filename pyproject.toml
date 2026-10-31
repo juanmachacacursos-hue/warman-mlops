@@ -1,0 +1,42 @@
+[project]
+name = "warman"
+version = "1.0.0"
+description = "Mantenimiento predictivo de bombas Warman de alimentación a ciclones (MLOps de punta a punta)"
+readme = "README.md"
+authors = [{ name = "Juan Armando Machacca Catari" }]
+requires-python = ">=3.13,<3.14"
+dependencies = [
+    "fastapi==0.162.0",
+    "joblib==1.5.2",
+    "numpy==2.3.4",
+    "pandas==2.3.3",
+    "pydantic==2.11.10",
+    "scikit-learn==1.7.2",
+    "uvicorn==0.38.0",
+]
+
+[dependency-groups]
+dev = [
+    "httpx==0.28.1",
+    "pytest==8.4.2",
+]
+ui = [
+    "gradio==5.49.1",
+    "httpx==0.28.1",
+]
+
+[project.scripts]
+preparar-datos = "warman.data:main"
+entrenar = "warman.train:main"
+api = "warman.api:main"
+
+[build-system]
+requires = ["uv_build>=0.8,<0.12"]
+build-backend = "uv_build"
+
+[tool.uv]
+default-groups = ["dev", "ui"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra"

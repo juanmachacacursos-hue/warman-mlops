@@ -1,0 +1,24 @@
+# Entorno virtual
+.venv/
+
+# Python
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# Datos (se regeneran con `uv run preparar-datos`)
+data/
+
+# Modelo entrenado (se regenera con `uv run entrenar`).
+# La ficha models/metrics.json SÍ se sube al repositorio.
+models/*.joblib
+
+# Secretos
+.env
+
+# Sistema operativo / editores
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+.gradio/

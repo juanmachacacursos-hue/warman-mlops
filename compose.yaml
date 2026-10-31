@@ -1,0 +1,27 @@
+# Levanta la API y la interfaz con un solo comando:
+#   docker compose up --build
+# API:       http://localhost:8000/docs
+# Interfaz:  http://localhost:7860
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: warman-api:1.0.0
+    ports:
+      - "8000:8000"
+    restart: unless-stopped
+
+  app:
+    build:
+      context: .
+      dockerfile: app/Dockerfile
+    image: warman-app:1.0.0
+    environment:
+      API_URL: http://api:8000   # dentro de la red de compose, la API se llama "api"
+    ports:
+      - "7860:7860"
+    depends_on:
+      api:
+        condition: service_healthy
+    restart: unless-stopped

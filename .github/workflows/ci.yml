@@ -1,0 +1,62 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  pruebas:
+    name: Datos, entrenamiento y pruebas
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Instalar uv
+        uses: astral-sh/setup-uv@v6
+        with:
+          version: "0.11.32"
+          enable-cache: true
+
+      - name: Instalar dependencias (exactamente las del uv.lock)
+        run: uv sync --locked
+
+      - name: Preparar y validar datos
+        run: uv run preparar-datos
+
+      - name: Entrenar (falla si no pasa la puerta de calidad)
+        run: uv run entrenar
+
+      - name: Pruebas automáticas
+        run: uv run pytest -v
+
+      - name: Guardar la ficha del modelo
+        uses: actions/upload-artifact@v4
+        with:
+          name: metrics
+          path: models/metrics.json
+
+  docker:
+    name: Construir y probar contenedores
+    needs: pruebas
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Construir y levantar API + interfaz
+        run: docker compose up --build -d --wait
+
+      - name: Prueba de humo de la API
+        run: |
+          curl -fsS http://localhost:8000/health
+          curl -fsS -X POST http://localhost:8000/predict \
+            -H "Content-Type: application/json" \
+            -d '{"vibracion_rms_mm_s":2.6,"temp_rodamiento_acople_c":52.3,"temp_rodamiento_libre_c":47.8,"caudal_agua_sello_m3h":3.0,"presion_agua_sello_kpa":550,"presion_descarga_kpa":470,"velocidad_rpm":398,"potencia_kw":649,"densidad_pulpa_tm3":1.65,"nivel_cajon_pct":58,"horas_desde_cambio_impulsor":1500}'
+
+      - name: Prueba de humo de la interfaz
+        run: curl -fsS -o /dev/null http://localhost:7860
+
+      - name: Apagar
+        if: always()
+        run: docker compose down
